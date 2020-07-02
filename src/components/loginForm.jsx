@@ -13,15 +13,11 @@ class LoginForm extends Component {
 
   validate = () => {
     const result = Joi.validate(this.state.account, this.schema, { abortEarly: false });
-    console.log(result);
-    const errors = {};
-    const { account } = this.state;
-    if (account.username.trim() === '')
-      errors.username = "Username is required.";
-    if (account.password.trim() === '')
-      errors.password = "Passowrd is required.";
-    //console.log(Object.keys(errors).length === 0 ? null : errors);
-    return Object.keys(errors).length === 0 ? null : errors;
+    if (!result.error) return null;
+    const errors = {}
+    for (let item of result.error.details)
+      errors[item.path[0]] = item.message;
+    return errors;
   };
   handelChange = ({ currentTarget: input }) => {
     console.log({ currentTarget: input });
@@ -36,7 +32,7 @@ class LoginForm extends Component {
     const errors = this.validate();
     console.log(errors);
     this.setState({ errors: errors || {} });
-    if (errors) return;
+    //if (errors) return;
     console.log("Submitted");
   };
 
@@ -47,17 +43,19 @@ class LoginForm extends Component {
         <h1> Login</h1>
         <form onSubmit={this.handelSubmit}>
           <Input
-            name={this.username}
+            name="username"
             value={account.value}
-            label={"UserName"}
             onChange={this.handelChange}
+            //name={this.username}
+            label={"UserName"}
             error={errors.username}
           />
           <Input
-            name={this.password}
+            name="password"
             value={account.value}
-            label={"Password"}
             onChange={this.handelChange}
+            //name={this.password}
+            label={"Password"}
             error={errors.password}
           />
 
@@ -69,3 +67,4 @@ class LoginForm extends Component {
 }
 
 export default LoginForm;
+
